@@ -10,9 +10,9 @@ SCREEN_TITLE = "2048"
 
 class Numbers:
     def __init__(self):
-        self.numbers = [0]
+        self.num = [0]
         for i in range(0, 15):
-            self.numbers.append(0)
+            self.num.append(0)
     def randomNumber(self):
         count = 0
         while True:
@@ -22,87 +22,76 @@ class Numbers:
                 break
             randomPoint = random.randrange(0, 16)
             randomNum = random.randrange(2, 5, 2)
-            if self.numbers[randomPoint] == 0:
-                self.numbers[randomPoint] = randomNum
+            if self.num[randomPoint] == 0:
+                self.num[randomPoint] = randomNum
                 break
-            
-    def rightWipe(self, reNum = True):
-        oneWipe = False
-        for i, elem in enumerate(self.numbers):
-            if elem == 0:
-                continue
-            if i == 12 or i == 13 or i == 14 or i == 15:
-                continue
-            nextNum = self.numbers[i + 4]
-            if nextNum == 0:
-                self.numbers[i + 4] = elem    
-                self.numbers[i] = 0 
-                oneWipe = True
-            if nextNum == elem:
-                self.numbers[i + 4] = elem + nextNum
-                self.numbers[i] = 0
-                oneWipe = True
-        if oneWipe and reNum:
-            self.randomNumber()
-    def downWipe(self, reNum = True):
-        oneWipe = False
-        for i, elem in enumerate(self.numbers):
-            if elem == 0:
-                continue
-            if i == 3 or i == 7 or i == 11 or i == 15:
-                continue
-            nextNum = self.numbers[i + 1]
-            if nextNum == 0:
-                self.numbers[i + 1] = elem    
-                self.numbers[i] = 0 
-                oneWipe = True
-            if nextNum == elem:
-                self.numbers[i + 1] = elem + nextNum
-                self.numbers[i] = 0
-                oneWipe = True
-        if oneWipe and reNum:
-            self.randomNumber()
+    
+    def checkFourNum(self, one, two, three, four):
+        reRandom = False
+        if  self.num[one] == self.num[four]:
+            if self.num[two] == 0 and self.num[three] == 0:
+                self.num[one] = 0
+                self.num[four] *= 2
+                reRandom = True
 
-    def upWipe(self, reNum = True):
-        oneWipe = False
-        for i in range(15, 0, -1):
-            elem = self.numbers[i]
-            if elem == 0:
-                continue
-            if i == 0 or i == 4 or i == 8 or i == 12:
-                continue
-            nextNum = self.numbers[i - 1]
-            if nextNum == 0:
-                self.numbers[i - 1] = elem    
-                self.numbers[i] = 0 
-                oneWipe = True
-            if nextNum == elem:
-                self.numbers[i - 1] = elem + nextNum
-                self.numbers[i] = 0
-                oneWipe = True
-        if oneWipe and reNum:
+        if self.num[one] == self.num[three] and self.num[two] == 0:
+            self.num[one] = 0
+            self.num[three] *= 2        
+            reRandom = True
+
+        if self.num[two] == self.num[four] and self.num[three] == 0:
+            self.num[two] = 0
+            self.num[four] *= 2        
+            reRandom = True
+
+        num = [four, three, two, one]
+        for i in range(1, 4):
+            if self.num[num[i]] == self.num[num[i - 1]]:
+                self.num[num[i - 1]] = self.num[num[i - 1]] * 2
+                self.num[num[i]] = 0
+                reRandom = True
+         
+        num = [one, two, three, four] 
+        for j in range(1, 5):
+            for i in range(0, 3):
+                if self.num[num[i + 1]] == 0 and self.num[num[i]] != 0:
+                    self.num[num[i + 1]] = self.num[num[i]]  
+                    self.num[num[i]] = 0 
+                    reRandom = True
+        return reRandom
+            
+    def rightWipe(self):
+        randNum = False 
+        randNum = self.checkFourNum(0, 4, 8, 12) 
+        randNum = self.checkFourNum(1, 5, 9, 13) 
+        randNum = self.checkFourNum(2, 6, 10, 14) 
+        randNUm = self.checkFourNum(3, 7, 11, 15)  
+        if randNum:
             self.randomNumber()
- 
-    def leftWipe(self, reNum = True):
-        oneWipe = False
-        for i in range(15, 0, -1):
-            elem = self.numbers[i]
-            if elem == 0:
-                continue
-            if i == 0 or i == 1 or i == 2 or i == 3:
-                continue
-            nextNum = self.numbers[i - 4]
-            if nextNum == 0:
-                self.numbers[i - 4] = elem    
-                self.numbers[i] = 0 
-                oneWipe = True
-            if nextNum == elem:
-                self.numbers[i - 4] = elem + nextNum
-                self.numbers[i] = 0
-                oneWipe = True
-        if oneWipe and reNum:
+    def leftWipe(self):
+        randNum = False
+        randNum = self.checkFourNum(12, 8, 4, 0) 
+        randNum = self.checkFourNum(13, 9, 5, 1) 
+        randNum = self.checkFourNum(14, 10, 6, 2) 
+        randNum = self.checkFourNum(15, 11, 7, 3) 
+        if randNum:
             self.randomNumber()
- 
+    def upWipe(self):
+        randNum = False
+        randNum = self.checkFourNum(15, 14, 13, 12) 
+        randNum = self.checkFourNum(11, 10, 9, 8) 
+        randNum = self.checkFourNum(7, 6, 7, 8) 
+        randNum = self.checkFourNum(3, 2, 1, 0) 
+        if randNum:
+            self.randomNumber()
+    def downWipe(self):
+        randNum = False
+        randNum = self.checkFourNum(12, 13, 14, 15) 
+        randNum = self.checkFourNum(8, 9, 10, 11) 
+        randNum = self.checkFourNum(4, 5, 6, 7) 
+        randNum = self.checkFourNum(0, 1, 2, 3)
+        if randNum:
+            self.randomNumber()
 numbers = Numbers()
 
 numbers.randomNumber()
@@ -128,7 +117,8 @@ def on_draw(delte_time):
     count = 0
     for i in range(1,5):
         for j in range(0,4):
-            drawTxt(i, j, numbers.numbers[count])
+            if numbers.num[count] != 0:
+                drawTxt(i, j, numbers.num[count])
             count += 1
 
 
@@ -140,24 +130,12 @@ class MyGame(arcade.Window):
     def on_key_press(self, key, modifiers):
         if key == arcade.key.RIGHT:
             numbers.rightWipe()
-            numbers.rightWipe(False)
-            numbers.rightWipe(False)
-            numbers.rightWipe(False)
         elif key == arcade.key.DOWN:
             numbers.downWipe()
-            numbers.downWipe(False)
-            numbers.downWipe(False)
-            numbers.downWipe(False)
         elif key == arcade.key.UP:
             numbers.upWipe()
-            numbers.upWipe(False)
-            numbers.upWipe(False)
-            numbers.upWipe(False)
         elif key == arcade.key.LEFT:
             numbers.leftWipe()
-            numbers.leftWipe(False)
-            numbers.leftWipe(False)
-            numbers.leftWipe(False)
      
 arcade.schedule(on_draw, 1 / 80)
 MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
